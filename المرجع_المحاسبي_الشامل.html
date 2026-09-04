@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المرجع المحاسبي الشامل</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@500;600;700&family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   LEDGER BOOK — Design tokens
+   Ink:        #232019
+   Paper:      #F7F2E7
+   Paper alt:  #EFE7D6
+   Ledger green (cover/accent):  #1F4735
+   Ledger green deep:            #163227
+   Brass:      #A9793C
+   Rule lines: #CBC0A4
+   Danger/unfavorable red (accounting red ink): #A23B2E
+   ============================================================ */
+
+:root{
+  --ink:#232019;
+  --ink-soft:#4a4436;
+  --paper:#F7F2E7;
+  --paper-alt:#EFE6D2;
+  --paper-deep:#E7DCC2;
+  --green:#1F4735;
+  --green-deep:#12291D;
+  --green-mid:#2E5C46;
+  --brass:#A9793C;
+  --brass-bright:#C79544;
+  --rule:#CBBFA0;
+  --rule-soft:#DED3B7;
+  --red-ink:#8C3324;
+  --shadow: 0 18px 40px -20px rgba(18,41,29,.35);
+
+  --font-display:'Markazi Text','Cairo',serif;
+  --font-head:'Cairo','Tajawal',sans-serif;
+  --font-body:'Tajawal','Cairo',sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--green-deep);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-weight:400;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* thin brass rail across very top, evokes ledger binding edge */
+.brass-rail{
+  position:fixed; inset:0 0 auto 0; height:5px; z-index:60;
+  background:linear-gradient(90deg,var(--brass),var(--brass-bright) 35%,var(--brass) 70%,var(--brass-bright));
+}
+
+/* ===================== LAYOUT ===================== */
+body{
+  display:flex;
+  min-height:100vh;
+  overflow:hidden;
+}
+
+/* ===================== SIDEBAR "COVER" ===================== */
+.ledger-cover{
+  width:300px;
+  flex:0 0 300px;
+  background:
+    radial-gradient(140% 100% at 10% 0%, rgba(255,255,255,.05), transparent 45%),
+    linear-gradient(180deg,var(--green) 0%, var(--green-deep) 78%);
+  color:#EFE8D6;
+  position:relative;
+  padding:34px 26px 26px;
+  border-left:1px solid rgba(0,0,0,.25);
+  box-shadow: inset -18px 0 30px -28px rgba(0,0,0,.6);
+}
+.cover-inner{
+  height:100%;
+  display:flex;
+  flex-direction:column;
+}
+.cover-mark{
+  color:var(--brass-bright);
+  width:46px; margin-bottom:18px;
+}
+.seal{width:46px;height:46px;}
+.seal-text{
+  font-family:var(--font-mono);
+  font-size:11px;
+  fill:var(--brass-bright);
+  letter-spacing:1px;
+}
+.cover-title{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:29px;
+  line-height:1.28;
+  margin:0 0 12px;
+  color:#FAF6EA;
+  letter-spacing:.2px;
+}
+.cover-sub{
+  font-size:12.5px;
+  line-height:1.9;
+  color:#C9C0A2;
+  margin:0 0 26px;
+  font-weight:300;
+}
+
+.toc-nav{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  overflow-y:auto;
+  padding-left:2px;
+  margin-left:-2px;
+  flex:1;
+}
+.nav-link{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  text-decoration:none;
+  color:#D8CFB4;
+  padding:10px 10px;
+  border-radius:3px;
+  font-size:14.5px;
+  font-weight:500;
+  border-right:2px solid transparent;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.nav-link:hover{
+  background:rgba(255,255,255,.05);
+  color:#FAF6EA;
+}
+.nav-link.active{
+  background:rgba(201,149,68,.14);
+  color:#FCEFD4;
+  border-right-color:var(--brass-bright);
+}
+.nav-tag{
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--brass-bright);
+  min-width:20px;
+  opacity:.9;
+}
+.nav-link.active .nav-tag{color:#FCEFD4;}
+
+.cover-foot{margin-top:18px;}
+.ruled-line{
+  height:1px;
+  background:linear-gradient(90deg, rgba(201,149,68,.55), rgba(201,149,68,0));
+  margin-bottom:12px;
+}
+.foot-note{
+  font-size:11.5px;
+  color:#9C927A;
+  line-height:1.7;
+  margin:0;
+}
+
+.mobile-toggle{
+  display:none;
+  position:fixed;
+  top:16px; left:16px;
+  z-index:80;
+  width:42px; height:42px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,.2);
+  background:var(--green-deep);
+  cursor:pointer;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+}
+.mobile-toggle span{
+  width:18px; height:2px; background:var(--brass-bright); border-radius:2px;
+}
+
+/* ===================== MAIN PAGES ===================== */
+.ledger-pages{
+  flex:1;
+  height:100vh;
+  overflow-y:auto;
+  background:
+    linear-gradient(var(--rule-soft) 1px, transparent 1px),
+    var(--paper);
+  background-size: 100% 42px;
+  background-position: 0 168px;
+  position:relative;
+}
+.pages-scroller{
+  max-width:900px;
+  margin:0 auto;
+  padding:56px 56px 40px;
+  position:relative;
+}
+
+.progress-track{
+  position:sticky;
+  top:0;
+  height:3px;
+  background:var(--paper-deep);
+  z-index:40;
+  margin:-56px -56px 40px;
+}
+.progress-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,var(--brass),var(--green-mid));
+  transition:width .1s linear;
+}
+
+/* Each "part" is a ledger sheet: a folio number + ruled header */
+.ledger-sheet{
+  padding-top:34px;
+  margin-bottom:18px;
+  scroll-margin-top:20px;
+}
+.ledger-sheet:not(:first-of-type){
+  border-top:1px double var(--rule);
+  padding-top:52px;
+  margin-top:36px;
+}
+
+.sheet-head{
+  display:flex;
+  align-items:baseline;
+  gap:18px;
+  margin-bottom:30px;
+}
+.folio-num{
+  font-family:var(--font-mono);
+  font-size:15px;
+  color:var(--brass);
+  border:1px solid var(--brass);
+  border-radius:50%;
+  width:38px;height:38px;
+  min-width:38px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--paper-alt);
+}
+.sheet-head h1{
+  font-family:var(--font-head);
+  font-weight:800;
+  font-size:26px;
+  color:var(--green-deep);
+  margin:0;
+  line-height:1.4;
+}
+
+.sheet-body{font-size:15.5px;line-height:2;}
+
+/* ---- typography inside content ---- */
+.sheet-body h2{
+  font-family:var(--font-head);
+  font-weight:700;
+  font-size:19px;
+  color:var(--green);
+  margin:38px 0 14px;
+  padding-right:14px;
+  border-right:3px solid var(--brass);
+}
+.sheet-body h3{
+  font-family:var(--font-head);
+  font-weight:700;
+  font-size:16px;
+  color:var(--ink);
+  margin:24px 0 10px;
+}
+.sheet-body p{
+  margin:0 0 14px;
+  color:var(--ink-soft);
+}
+.sheet-body strong{color:var(--ink); font-weight:700;}
+.sheet-body ul, .sheet-body ol{
+  margin:0 0 16px;
+  padding-right:26px;
+  color:var(--ink-soft);
+}
+.sheet-body li{margin-bottom:7px;}
+.sheet-body li strong{color:var(--green-deep);}
+.sheet-body a{color:var(--green-mid); text-decoration-color:var(--rule);}
+
+/* ---- Q&A blocks: pandoc renders "**س:** ... \n ج:" as <p><strong>س:</strong> ...</p> */
+.sheet-body p:has(> strong:first-child){
+  background:var(--paper-alt);
+  border-right:3px solid var(--green-mid);
+  padding:12px 16px;
+  border-radius:2px;
+  margin-top:20px;
+  margin-bottom:0;
+  color:var(--ink);
+  font-weight:500;
+}
+.sheet-body p:has(> strong:first-child) + p{
+  padding:10px 19px 18px;
+  margin-bottom:8px;
+  color:var(--ink-soft);
+  border-right:3px solid var(--rule-soft);
+  margin-right:1px;
+}
+
+/* ---- tables: ledger ruling ---- */
+.sheet-body table{
+  width:100%;
+  border-collapse:collapse;
+  margin:18px 0 26px;
+  font-size:14px;
+  background:var(--paper);
+  box-shadow: var(--shadow);
+}
+.sheet-body thead th{
+  background:var(--green);
+  color:#F4EFDF;
+  font-family:var(--font-head);
+  font-weight:600;
+  text-align:right;
+  padding:11px 14px;
+  font-size:13.5px;
+  border-left:1px solid rgba(255,255,255,.12);
+}
+.sheet-body tbody td{
+  padding:10px 14px;
+  border-bottom:1px solid var(--rule-soft);
+  border-left:1px solid var(--rule-soft);
+  color:var(--ink-soft);
+  vertical-align:top;
+}
+.sheet-body tbody tr:nth-child(even){background:var(--paper-alt);}
+.sheet-body tbody tr:hover{background:#EFE1BE;}
+.sheet-body td:first-child, .sheet-body th:first-child{
+  font-weight:600;
+  color:var(--green-deep);
+}
+
+/* ---- code / formula blocks ---- */
+.sheet-body pre{
+  background:var(--green-deep);
+  color:#EADFC0;
+  border-radius:6px;
+  padding:18px 20px;
+  overflow-x:auto;
+  margin:16px 0 22px;
+  font-family:var(--font-mono);
+  font-size:13.5px;
+  line-height:1.9;
+  direction:ltr;
+  text-align:left;
+  box-shadow: var(--shadow);
+  border-right:4px solid var(--brass);
+}
+.sheet-body pre code{color:inherit; background:none;}
+.sheet-body code{
+  font-family:var(--font-mono);
+  background:var(--paper-deep);
+  padding:1px 6px;
+  border-radius:3px;
+  font-size:.92em;
+  color:var(--red-ink);
+  direction:ltr;
+  display:inline-block;
+}
+
+.sheet-body hr{
+  border:none;
+  border-top:1px double var(--rule);
+  margin:36px 0;
+}
+
+/* colophon footer */
+.colophon{
+  text-align:center;
+  padding:50px 20px 10px;
+  color:var(--ink-soft);
+}
+.colophon p{font-size:13px; opacity:.75;}
+.wide{max-width:320px; margin:0 auto 20px;}
+
+/* scrollbars */
+.ledger-pages::-webkit-scrollbar, .toc-nav::-webkit-scrollbar{width:9px;}
+.ledger-pages::-webkit-scrollbar-thumb{background:var(--paper-deep); border-radius:5px;}
+.toc-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15); border-radius:5px;}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 880px){
+  .ledger-cover{
+    position:fixed;
+    inset:0 auto 0 0;
+    transform:translateX(100%);
+    transition:transform .25s ease;
+    z-index:70;
+    width:80vw;
+    max-width:320px;
+  }
+  .ledger-cover.open{transform:translateX(0);}
+  .mobile-toggle{display:flex;}
+  .pages-scroller{padding:90px 22px 40px;}
+  .progress-track{margin:-90px -22px 30px;}
+  .sheet-head h1{font-size:21px;}
+  .cover-title{font-size:24px;}
+}
+
+@media print{
+  .ledger-cover, .mobile-toggle, .progress-track{display:none;}
+  .ledger-pages{overflow:visible; height:auto;}
+  body{display:block;}
+}
+
+</style>
+</head>
+<body>
+
+<div class="brass-rail"></div>
+
+<aside class="ledger-cover" id="sidebar">
+  <div class="cover-inner">
+    <div class="cover-mark">
+      <svg viewBox="0 0 64 64" class="seal">
+        <circle cx="32" cy="32" r="30" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="32" cy="32" r="24" fill="none" stroke="currentColor" stroke-width="1"/>
+        <text x="32" y="39" text-anchor="middle" class="seal-text">A/C</text>
+      </svg>
+    </div>
+    <h2 class="cover-title">المرجع المحاسبي<br>الشامل</h2>
+    <p class="cover-sub">(مبادئ المحاسبة – محاسبة التكاليف – القوائم المالية – المعايير الدولية IFRS – التحليل المالي – أسئلة مقابلات ومراجعة CMA)</p>
+
+    <nav class="toc-nav" id="tocNav">
+      <a href="#الجزء-الأول-المبادئ-والمفاهيم-المحاسبية-الأساسية" class="nav-link" data-idx="1"><span class="nav-tag">01</span><span class="nav-text">المبادئ</span></a>
+<a href="#الجزء-الثاني-الدورة-المحاسبية-الكاملة-accounting-cycle" class="nav-link" data-idx="2"><span class="nav-tag">02</span><span class="nav-text">الدورة</span></a>
+<a href="#الجزء-الثالث-القوائم-المالية-الأساسية-بالتفصيل" class="nav-link" data-idx="3"><span class="nav-tag">03</span><span class="nav-text">القوائم</span></a>
+<a href="#الجزء-الرابع-معايير-المحاسبة-الدولية-ifrsias-أهم-المعايير" class="nav-link" data-idx="4"><span class="nav-tag">04</span><span class="nav-text">IFRS</span></a>
+<a href="#الجزء-الخامس-محاسبة-التكاليف-الشاملة-cost-accounting" class="nav-link" data-idx="5"><span class="nav-tag">05</span><span class="nav-text">التكاليف</span></a>
+<a href="#الجزء-السادس-التحليل-المالي-والنسب-المالية-financial-statement-analysis" class="nav-link" data-idx="6"><span class="nav-tag">06</span><span class="nav-text">التحليل</span></a>
+<a href="#الجزء-السابع-أساسيات-cma-certified-management-accountant" class="nav-link" data-idx="7"><span class="nav-tag">07</span><span class="nav-text">CMA</span></a>
+<a href="#الجزء-الثامن-بنك-أسئلة-المقابلات-مع-الإجابات-النموذجية" class="nav-link" data-idx="8"><span class="nav-tag">08</span><span class="nav-text">المقابلات</span></a>
+<a href="#الجزء-التاسع-مصطلحات-محاسبية-سريعة-glossary" class="nav-link" data-idx="9"><span class="nav-tag">09</span><span class="nav-text">المصطلحات</span></a>
+    </nav>
+
+    <div class="cover-foot">
+      <div class="ruled-line"></div>
+      <p class="foot-note">دفتر مرجعي واحد — من المبادئ حتى غرفة المقابلة</p>
+    </div>
+  </div>
+  <button class="mobile-toggle" id="mobileToggle" aria-label="فتح الفهرس">
+    <span></span><span></span><span></span>
+  </button>
+</aside>
+
+<main class="ledger-pages" id="pages">
+  <div class="pages-scroller">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+<section class="ledger-sheet" id="الجزء-الأول-المبادئ-والمفاهيم-المحاسبية-الأساسية" data-chapter="1">
+  <header class="sheet-head">
+    <span class="folio-num">01</span>
+    <h1>الجزء الأول: المبادئ والمفاهيم المحاسبية الأساسية</h1>
+  </header>
+  <div class="sheet-body">
+
+<h2 id="تعريف-المحاسبة">1.1 تعريف المحاسبة</h2>
+<p>المحاسبة هي عملية <strong>تسجيل، تصنيف، تلخيص، وتفسير</strong> العمليات المالية للمنشأة بشكل يمكّن متخذي القرار (الإدارة، المستثمرين، الدائنين، الجهات الحكومية) من اتخاذ قرارات رشيدة.</p>
+<p><strong>الفرق بين المحاسبة (Accounting) والمسك الدفتري (Bookkeeping):</strong> - Bookkeeping: تسجيل العمليات فقط (قيود يومية، ترحيل). - Accounting: تشمل التسجيل + التصنيف + التلخيص + التحليل + إعداد التقارير + التفسير.</p>
+<h2 id="الفروض-المحاسبية-الأساسية-basic-assumptions">1.2 الفروض المحاسبية الأساسية (Basic Assumptions)</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>الفرض</th>
+<th>الشرح</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>الوحدة المحاسبية (Business Entity)</strong></td>
+<td>المنشأة كيان مستقل عن مالكها؛ لا تُخلط أصول وخصوم المالك الشخصية بالمنشأة</td>
+</tr>
+<tr class="even">
+<td><strong>الاستمرارية (Going Concern)</strong></td>
+<td>يُفترض أن المنشأة ستستمر في العمل مستقبلاً منظوراً وليست في طريقها للتصفية</td>
+</tr>
+<tr class="odd">
+<td><strong>الوحدة النقدية (Monetary Unit)</strong></td>
+<td>تُقاس العمليات المالية بوحدة نقدية ثابتة (كالدولار) بصرف النظر عن التضخم</td>
+</tr>
+<tr class="even">
+<td><strong>الفترة المحاسبية (Periodicity/Time Period)</strong></td>
+<td>تُقسّم حياة المنشأة إلى فترات زمنية دورية (شهرية/ربع سنوية/سنوية) لإعداد التقارير</td>
+</tr>
+</tbody>
+</table>
+<h2 id="المبادئ-المحاسبية-principles">1.3 المبادئ المحاسبية (Principles)</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>المبدأ</th>
+<th>الشرح</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>مبدأ التكلفة التاريخية (Historical Cost)</strong></td>
+<td>تُسجَّل الأصول بتكلفة اقتنائها الفعلية وليس بالقيمة السوقية</td>
+</tr>
+<tr class="even">
+<td><strong>مبدأ الاعتراف بالإيراد (Revenue Recognition)</strong></td>
+<td>يُعترف بالإيراد عند تحقق الالتزام بالأداء (تسليم السلعة/تقديم الخدمة) بغض النظر عن وقت التحصيل (IFRS 15)</td>
+</tr>
+<tr class="odd">
+<td><strong>مبدأ المقابلة (Matching Principle)</strong></td>
+<td>تُقابَل المصروفات بالإيرادات التي ساهمت في تحقيقها في نفس الفترة</td>
+</tr>
+<tr class="even">
+<td><strong>مبدأ الإفصاح التام (Full Disclosure)</strong></td>
+<td>يجب الإفصاح عن كل المعلومات الجوهرية المؤثرة على قرار مستخدم القوائم المالية</td>
+</tr>
+<tr class="odd">
+<td><strong>مبدأ الموضوعية (Objectivity)</strong></td>
+<td>الاعتماد على مستندات وأدلة قابلة للتحقق وليس على تقديرات شخصية</td>
+</tr>
+<tr class="even">
+<td><strong>مبدأ الثبات (Consistency)</strong></td>
+<td>استخدام نفس الطرق المحاسبية عبر الفترات لضمان قابلية المقارنة</td>
+</tr>
+<tr class="odd">
+<td><strong>مبدأ الحيطة والحذر (Conservatism/Prudence)</strong></td>
+<td>عدم المبالغة في تقدير الأصول أو الإيرادات، والاعتراف بالخسائر المتوقعة فور توقعها</td>
+</tr>
+<tr class="even">
+<td><strong>مبدأ الأهمية النسبية (Materiality)</strong></td>
+<td>التركيز على البنود ذات التأثير الجوهري على القرار وتجاهل التفاصيل الصغيرة غير المؤثرة</td>
+</tr>
+</tbody>
+</table>
+<h2 id="خصائص-المعلومات-المحاسبية-الجيدة-الإطار-المفاهيمي-ifrs">1.4 خصائص المعلومات المحاسبية الجيدة (الإطار المفاهيمي IFRS)</h2>
+<ul>
+<li><strong>الخصائص الأساسية (Fundamental):</strong>
+<ul>
+<li>الملاءمة (Relevance): القيمة التنبؤية + القيمة التأكيدية + الأهمية النسبية</li>
+<li>التمثيل الصادق (Faithful Representation): الاكتمال + الحياد + الخلو من الخطأ</li>
+</ul></li>
+<li><strong>الخصائص المعززة (Enhancing):</strong>
+<ul>
+<li>القابلية للمقارنة (Comparability)</li>
+<li>قابلية التحقق (Verifiability)</li>
+<li>التوقيت المناسب (Timeliness)</li>
+<li>قابلية الفهم (Understandability)</li>
+</ul></li>
+</ul>
+<h2 id="المعادلة-المحاسبية-accounting-equation">1.5 المعادلة المحاسبية (Accounting Equation)</h2>
+<pre><code>الأصول = الخصوم + حقوق الملكية
+Assets = Liabilities + Owner&#39;s Equity</code></pre>
+<p>وتمتد لتشمل نتيجة الأعمال:</p>
+<pre><code>حقوق الملكية آخر المدة = حقوق الملكية أول المدة + رأس مال إضافي – مسحوبات + (الإيرادات – المصروفات)</code></pre>
+<h2 id="نظام-القيد-المزدوج-double-entry-system">1.6 نظام القيد المزدوج (Double Entry System)</h2>
+<p>كل عملية مالية تؤثر على حسابين على الأقل بنفس القيمة (مدين = دائن).</p>
+<p><strong>قاعدة الأرصدة الطبيعية:</strong> | نوع الحساب | يزيد بـ | ينقص بـ | |—|—|—| | الأصول (Assets) | مدين | دائن | | المصروفات (Expenses) | مدين | دائن | | المسحوبات (Drawings) | مدين | دائن | | الخصوم (Liabilities) | دائن | مدين | | حقوق الملكية (Equity) | دائن | مدين | | الإيرادات (Revenues) | دائن | مدين |</p>
+<p><strong>اختصار شهير: DEAD CLIC</strong> - Debit يزيد: Dividends, Expenses, Assets, Drawings - Credit يزيد: Liabilities, Income/Capital</p>
+<h2 id="أساس-الاستحقاق-مقابل-الأساس-النقدي">1.7 أساس الاستحقاق مقابل الأساس النقدي</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>الأساس</th>
+<th>الوصف</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>أساس الاستحقاق (Accrual Basis)</strong></td>
+<td>الاعتراف بالإيراد عند تحققه والمصروف عند حدوثه بصرف النظر عن التحصيل/الدفع الفعلي — الأساس المعتمد وفق IFRS/GAAP</td>
+</tr>
+<tr class="even">
+<td><strong>الأساس النقدي (Cash Basis)</strong></td>
+<td>الاعتراف بالإيراد عند القبض والمصروف عند الدفع فعلياً — يُستخدم غالباً في المنشآت الصغيرة جداً</td>
+</tr>
+</tbody>
+</table>
+<h2 id="تصنيف-الحسابات-الرئيسية">1.8 تصنيف الحسابات الرئيسية</h2>
+<ol type="1">
+<li><strong>الأصول (Assets):</strong>
+<ul>
+<li>متداولة: نقدية، ذمم مدينة، مخزون، مصروفات مدفوعة مقدماً، استثمارات قصيرة الأجل</li>
+<li>غير متداولة: أصول ثابتة (PP&amp;E)، أصول غير ملموسة، استثمارات طويلة الأجل، شهرة (Goodwill)</li>
+</ul></li>
+<li><strong>الخصوم (Liabilities):</strong>
+<ul>
+<li>متداولة: ذمم دائنة، قروض قصيرة الأجل، مصروفات مستحقة، إيرادات مقبوضة مقدماً</li>
+<li>غير متداولة: قروض طويلة الأجل، سندات مستحقة الدفع، مخصصات طويلة الأجل</li>
+</ul></li>
+<li><strong>حقوق الملكية (Equity):</strong> رأس المال، الأرباح المحتجزة، الاحتياطيات، علاوة إصدار</li>
+<li><strong>الإيرادات (Revenues):</strong> تشغيلية وغير تشغيلية</li>
+<li><strong>المصروفات (Expenses):</strong> تكلفة البضاعة المباعة، مصروفات بيعية وإدارية، مصروفات تمويلية، ضرائب</li>
+</ol>
+<h2 id="القيود-التسوية-الشهيرة-adjusting-entries">1.9 القيود التسوية الشهيرة (Adjusting Entries)</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>النوع</th>
+<th>مثال</th>
+<th>القيد</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>مصروفات مستحقة (Accrued Expenses)</td>
+<td>رواتب مستحقة لم تُدفع</td>
+<td>من ح/ مصروف الرواتب – إلى ح/ رواتب مستحقة</td>
+</tr>
+<tr class="even">
+<td>إيرادات مستحقة (Accrued Revenues)</td>
+<td>خدمة أُنجزت ولم تُحصَّل</td>
+<td>من ح/ ذمم مدينة – إلى ح/ إيراد</td>
+</tr>
+<tr class="odd">
+<td>مصروفات مدفوعة مقدماً (Prepaid Expenses)</td>
+<td>تأمين مدفوع لسنة</td>
+<td>تسجيل الجزء المستنفد كمصروف والباقي كأصل</td>
+</tr>
+<tr class="even">
+<td>إيرادات مقبوضة مقدماً (Unearned Revenue)</td>
+<td>دفعة عميل قبل التسليم</td>
+<td>تحويل الجزء المُنجز من التزام إلى إيراد</td>
+</tr>
+<tr class="odd">
+<td>الإهلاك (Depreciation)</td>
+<td>استهلاك أصل ثابت</td>
+<td>من ح/ مصروف إهلاك – إلى ح/ مجمع إهلاك</td>
+</tr>
+<tr class="even">
+<td>مخصص الديون المشكوك فيها (Bad Debt/Allowance)</td>
+<td>تقدير ذمم لن تُحصَّل</td>
+<td>من ح/ مصروف ديون معدومة – إلى ح/ مخصص ديون مشكوك فيها</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+  </div>
+</section>
+
+<section class="ledger-sheet" id="الجزء-الثاني-الدورة-المحاسبية-الكاملة-accounting-cycle" data-chapter="2">
+  <header class="sheet-head">
+    <span class="folio-num">02</span>
+    <h1>الجزء الثاني: الدورة المحاسبية الكاملة (Accounting Cycle)</h1>
+  </header>
+  <div class="sheet-body">
+
+<ol type="1">
+<li><strong>تحليل المستندات</strong> (فواتير، إيصالات، عقود) وتحديد أثرها على المعادلة المحاسبية</li>
+<li><strong>تسجيل القيود اليومية</strong> (Journal Entries) في دفتر اليومية حسب تسلسل التاريخ</li>
+<li><strong>الترحيل</strong> (Posting) إلى دفتر الأستاذ العام (General Ledger)</li>
+<li><strong>إعداد ميزان المراجعة قبل التسوية</strong> (Unadjusted Trial Balance) للتأكد من تساوي المدين والدائن</li>
+<li><strong>إعداد قيود التسوية</strong> (Adjusting Entries) في نهاية الفترة</li>
+<li><strong>إعداد ميزان المراجعة المعدَّل</strong> (Adjusted Trial Balance)</li>
+<li><strong>إعداد القوائم المالية</strong> (Financial Statements): قائمة الدخل، حقوق الملكية، المركز المالي، التدفقات النقدية</li>
+<li><strong>إقفال الحسابات المؤقتة</strong> (Closing Entries): إقفال الإيرادات والمصروفات في ح/ ملخص الدخل ثم إلى الأرباح المحتجزة</li>
+<li><strong>ميزان المراجعة بعد الإقفال</strong> (Post-Closing Trial Balance) — يشمل فقط حسابات الميزانية الدائمة</li>
+<li>(اختياري) <strong>قيود عكسية</strong> (Reversing Entries) لبعض التسويات في بداية الفترة التالية لتسهيل التسجيل</li>
+</ol>
+<p><strong>الحسابات المؤقتة (Temporary/Nominal):</strong> الإيرادات، المصروفات، المسحوبات — تُقفل في نهاية كل فترة. <strong>الحسابات الدائمة (Permanent/Real):</strong> الأصول، الخصوم، حقوق الملكية — أرصدتها تنتقل للفترة التالية.</p>
+<hr />
+
+  </div>
+</section>
+
+<section class="ledger-sheet" id="الجزء-الثالث-القوائم-المالية-الأساسية-بالتفصيل" data-chapter="3">
+  <header class="sheet-head">
+    <span class="folio-num">03</span>
+    <h1>الجزء الثالث: القوائم المالية الأساسية بالتفصيل</h1>
+  </header>
+  <div class="sheet-body">
+
+<h2 id="قائمة-المركز-المالي-statement-of-financial-position-balance-sheet">3.1 قائمة المركز المالي (Statement of Financial Position / Balance Sheet)</h2>
+<p>تعرض الأصول والخصوم وحقوق الملكية في <strong>لحظة زمنية معينة</strong>.</p>
+<p><strong>الشكل العام (بالترتيب حسب السيولة تنازلياً أو تصاعدياً حسب IFRS/GAAP):</strong></p>
+<pre><code>الأصول المتداولة (Current Assets)
++ الأصول غير المتداولة (Non-Current Assets)
+= إجمالي الأصول
+
+الخصوم المتداولة (Current Liabilities)
++ الخصوم غير المتداولة (Non-Current Liabilities)
++ حقوق الملكية (Equity)
+= إجمالي الخصوم وحقوق الملكية</code></pre>
+<p>يجب أن يتحقق دائماً: <strong>إجمالي الأصول = إجمالي الخصوم + حقوق الملكية</strong></p>
+<h2 id="قائمة-الدخل-income-statement-statement-of-profit-or-loss">3.2 قائمة الدخل (Income Statement / Statement of Profit or Loss)</h2>
+<p>تعرض نتيجة أعمال المنشأة (ربح أو خسارة) خلال <strong>فترة زمنية</strong>.</p>
+<p><strong>الشكل متعدد الخطوات (Multi-Step):</strong></p>
+<pre><code>المبيعات (صافي)                         xxx
+(-) تكلفة البضاعة المباعة (COGS)        (xxx)
+= مجمل الربح (Gross Profit)              xxx
+(-) مصروفات بيعية وتسويقية              (xxx)
+(-) مصروفات إدارية وعمومية               (xxx)
+= الربح التشغيلي (Operating Income/EBIT) xxx
+(-) مصروفات تمويلية (فوائد)             (xxx)
++ إيرادات أخرى                            xxx
+= الربح قبل الضريبة (EBT)                xxx
+(-) ضريبة الدخل                          (xxx)
+= صافي الربح (Net Income)                xxx</code></pre>
+<p><strong>حساب تكلفة البضاعة المباعة (COGS) للمنشأة التجارية:</strong></p>
+<pre><code>مخزون أول المدة + المشتريات (صافي) – مخزون آخر المدة = COGS</code></pre>
+<p><strong>للمنشأة الصناعية:</strong></p>
+<pre><code>تكلفة البضاعة الجاهزة المتاحة للبيع = مخزون إنتاج تام أول المدة + تكلفة الإنتاج التام خلال الفترة
+COGS = تكلفة البضاعة المتاحة للبيع – مخزون إنتاج تام آخر المدة</code></pre>
+<h2 id="قائمة-التغير-في-حقوق-الملكية-statement-of-changes-in-equity">3.3 قائمة التغير في حقوق الملكية (Statement of Changes in Equity)</h2>
+<pre><code>رأس المال أول المدة
++ زيادات رأس المال
++ صافي ربح الفترة
+– توزيعات أرباح (Dividends)
++/– تعديلات أخرى (احتياطيات، إعادة تقييم)
+= رصيد حقوق الملكية آخر المدة</code></pre>
+<h2 id="قائمة-التدفقات-النقدية-statement-of-cash-flows">3.4 قائمة التدفقات النقدية (Statement of Cash Flows)</h2>
+<p>تنقسم إلى ثلاثة أنشطة:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>النشاط</th>
+<th>يشمل</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>التشغيلي (Operating)</strong></td>
+<td>التحصيلات من العملاء، المدفوعات للموردين والموظفين، الفوائد المدفوعة/المقبوضة (حسب السياسة)، الضرائب</td>
+</tr>
+<tr class="even">
+<td><strong>الاستثماري (Investing)</strong></td>
+<td>شراء/بيع أصول ثابتة، شراء/بيع استثمارات طويلة الأجل</td>
+</tr>
+<tr class="odd">
+<td><strong>التمويلي (Financing)</strong></td>
+<td>إصدار/سداد قروض، إصدار أسهم، توزيعات الأرباح المدفوعة</td>
+</tr>
+</tbody>
+</table>
+<p><strong>طريقتان لإعداد النشاط التشغيلي:</strong> - <strong>الطريقة المباشرة (Direct Method):</strong> عرض التحصيلات والمدفوعات الفعلية نقداً - <strong>الطريقة غير المباشرة (Indirect Method) — الأكثر استخداماً:</strong></p>
+<pre><code>صافي الربح
++ الإهلاك والاستهلاك (بنود غير نقدية)
++/– التغير في رأس المال العامل (ذمم مدينة، مخزون، ذمم دائنة...)
+= صافي النقد من الأنشطة التشغيلية</code></pre>
+<h2 id="الإيضاحات-المتممة-للقوائم-المالية-notes-to-financial-statements">3.5 الإيضاحات المتممة للقوائم المالية (Notes to Financial Statements)</h2>
+<p>تشمل: السياسات المحاسبية المتبعة، تفاصيل الأصول الثابتة والإهلاك، الالتزامات المحتملة، معلومات القطاعات، الأطراف ذات العلاقة، الأحداث اللاحقة لتاريخ الميزانية.</p>
+<h2 id="أمثلة-على-قيود-يومية-شائعة-في-المقابلات">3.6 أمثلة على قيود يومية شائعة في المقابلات</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>العملية</th>
+<th>القيد</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>شراء بضاعة نقداً</td>
+<td>من ح/ المشتريات (أو المخزون) – إلى ح/ الصندوق</td>
+</tr>
+<tr class="even">
+<td>بيع بضاعة آجل</td>
+<td>من ح/ ذمم مدينة – إلى ح/ المبيعات</td>
+</tr>
+<tr class="odd">
+<td>سداد مصروف</td>
+<td>من ح/ المصروف – إلى ح/ الصندوق/البنك</td>
+</tr>
+<tr class="even">
+<td>شراء أصل ثابت بالأجل</td>
+<td>من ح/ الأصل الثابت – إلى ح/ ذمم دائنة/دائنون</td>
+</tr>
+<tr class="odd">
+<td>قيد الإهلاك</td>
+<td>من ح/ مصروف إهلاك – إلى ح/ مجمع إهلاك الأصل</td>
+</tr>
+<tr class="even">
+<td>إثبات ديون معدومة فعلياً (Write-off)</td>
+<td>من ح/ مخصص ديون مشكوك فيها – إلى ح/ ذمم مدينة</td>
+</tr>
+<tr class="odd">
+<td>إقفال الإيرادات</td>
+<td>من ح/ الإيرادات – إلى ح/ ملخص الدخل</td>
+</tr>
+<tr class="even">
+<td>إقفال المصروفات</td>
+<td>من ح/ ملخص الدخل – إلى ح/ المصروفات</td>
+</tr>
+<tr class="odd">
+<td>إقفال صافي الربح</td>
+<td>من ح/ ملخص الدخل – إلى ح/ الأرباح المحتجزة</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+  </div>
+</section>
+
+<section class="ledger-sheet" id="الجزء-الرابع-معايير-المحاسبة-الدولية-ifrsias-أهم-المعايير" data-chapter="4">
+  <header class="sheet-head">
+    <span class="folio-num">04</span>
+    <h1>الجزء الرابع: معايير المحاسبة الدولية (IFRS/IAS) — أهم المعايير</h1>
+  </header>
+  <div class="sheet-body">
+
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>المعيار</th>
+<th>الموضوع</th>
+<th>أهم النقاط</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>الإطار المفاهيمي (Conceptual Framework)</strong></td>
+<td>أسس إعداد القوائم المالية</td>
+<td>يحدد الخصائص النوعية، عناصر القوائم المالية، أسس القياس</td>
+</tr>
+<tr class="even">
+<td><strong>IAS 1</strong></td>
+<td>عرض القوائم المالية</td>
+<td>المكونات الخمسة للقوائم المالية، التبويب المتداول/غير المتداول</td>
+</tr>
+<tr class="odd">
+<td><strong>IAS 2</strong></td>
+<td>المخزون</td>
+<td>يُقاس بالأقل من التكلفة أو صافي القيمة البيعية (Lower of Cost or NRV)؛ طرق التكلفة: FIFO أو المتوسط المرجح (LIFO غير مسموح وفق IFRS)</td>
+</tr>
+<tr class="even">
+<td><strong>IAS 7</strong></td>
+<td>التدفقات النقدية</td>
+<td>تصنيف الأنشطة الثلاثة (تشغيلي/استثماري/تمويلي)</td>
+</tr>
+<tr class="odd">
+<td><strong>IAS 8</strong></td>
+<td>السياسات المحاسبية والتقديرات والأخطاء</td>
+<td>كيفية معالجة التغير في السياسة أو التقدير أو تصحيح خطأ (بأثر رجعي غالباً للسياسات، وبأثر مستقبلي للتقديرات)</td>
+</tr>
+<tr class="even">
+<td><strong>IAS 10</strong></td>
+<td>الأحداث اللاحقة لتاريخ الميزانية</td>
+<td>أحداث تعديلية (Adjusting) مقابل أحداث إفصاحية (Non-Adjusting)</td>
+</tr>
+<tr class="odd">
+<td><strong>IAS 12</strong></td>
+<td>ضرائب الدخل</td>
+<td>الضرائب المؤجلة (Deferred Tax) الناتجة عن الفروق المؤقتة بين الأساس الضريبي والمحاسبي</td>
+</tr>
+<tr class="even">
+<td><strong>IAS 16</strong></td>
+<td>الممتلكات والمصانع والمعدات (PP&amp;E)</td>
+<td>نموذج التكلفة مقابل نموذج إعادة التقييم؛ طرق الإهلاك (القسط الثابت، القسط المتناقص، وحدات الإنتاج)</td>
+</tr>
+<tr class="odd">
+<td><strong>IAS 17 / IFRS 16</strong></td>
+<td>عقود الإيجار</td>
+<td>IFRS 16 (الحالي): جميع عقود الإيجار (تقريباً) تُرسمل في ميزانية المستأجر كأصل حق استخدام والتزام إيجار</td>
+</tr>
+<tr class="even">
+<td><strong>IAS 19</strong></td>
+<td>منافع الموظفين</td>
+<td>خطط المنافع المحددة مقابل الاشتراكات المحددة</td>
+</tr>
+<tr class="odd">
+<td><strong>IAS 20</strong></td>
+<td>المنح الحكومية</td>
+<td>الاعتراف بها بشكل منهجي كإيراد يقابل المصروفات ذات الصلة</td>
+</tr>
+<tr class="even">
+<td><strong>IAS 21</strong></td>
+<td>آثار التغير في أسعار الصرف الأجنبي</td>
+<td>فرق ترجمة العملات الأجنبية</td>
+</tr>
+<tr class="odd">
+<td><strong>IAS 23</strong></td>
+<td>تكاليف الاقتراض</td>
+<td>رسملة تكاليف الاقتراض المرتبطة مباشرة بالأصول المؤهلة</td>
+</tr>
+<tr class="even">
+<td><strong>IAS 24</strong></td>
+<td>الإفصاح عن الأطراف ذات العلاقة</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>IAS 27/28</strong></td>
+<td>القوائم المالية المنفصلة والاستثمار في الشركات الزميلة</td>
+<td>طريقة حقوق الملكية (Equity Method) للشركات الزميلة (ملكية 20%-50%)</td>
+</tr>
+<tr class="even">
+<td><strong>IAS 33</strong></td>
+<td>ربحية السهم (EPS)</td>
+<td>ربحية السهم الأساسية والمخففة</td>
+</tr>
+<tr class="odd">
+<td><strong>IAS 36</strong></td>
+<td>اضمحلال قيمة الأصول (Impairment)</td>
+<td>مقارنة القيمة الدفترية بالقيمة القابلة للاسترداد (الأعلى من القيمة العادلة ناقص تكاليف البيع، وقيمة الاستخدام)</td>
+</tr>
+<tr class="even">
+<td><strong>IAS 37</strong></td>
+<td>المخصصات والالتزامات والأصول المحتملة</td>
+<td>المخصص يُسجَّل عند وجود التزام حالي محتمل الحدوث وقابل للقياس؛ الالتزام المحتمل يُفصح عنه فقط</td>
+</tr>
+<tr class="odd">
+<td><strong>IAS 38</strong></td>
+<td>الأصول غير الملموسة</td>
+<td>لا يُعترف بالبحث كأصل، بل يُرسمل التطوير إذا تحققت شروط معينة</td>
+</tr>
+<tr class="even">
+<td><strong>IAS 40</strong></td>
+<td>العقارات الاستثمارية</td>
+<td>نموذج التكلفة أو القيمة العادلة</td>
+</tr>
+<tr class="odd">
+<td><strong>IFRS 3</strong></td>
+<td>اندماج الأعمال</td>
+<td>طريقة الاستحواذ (Acquisition Method)، حساب الشهرة (Goodwill)</td>
+</tr>
+<tr class="even">
+<td><strong>IFRS 7 / IFRS 9</strong></td>
+<td>الأدوات المالية</td>
+<td>IFRS 9: تصنيف الأصول المالية (بالتكلفة المطفأة، بالقيمة العادلة من خلال الدخل الشامل، بالقيمة العادلة من خلال الربح والخسارة)؛ نموذج الخسارة الائتمانية المتوقعة (ECL)</td>
+</tr>
+<tr class="odd">
+<td><strong>IFRS 8</strong></td>
+<td>القطاعات التشغيلية</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>IFRS 10/11/12</strong></td>
+<td>القوائم المالية الموحدة، الترتيبات المشتركة، الإفصاح عن الحصص في المنشآت الأخرى</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>IFRS 13</strong></td>
+<td>قياس القيمة العادلة</td>
+<td>التسلسل الهرمي للقيمة العادلة (Level 1, 2, 3)</td>
+</tr>
+<tr class="even">
+<td><strong>IFRS 15</strong></td>
+<td>الإيراد من العقود مع العملاء</td>
+<td>نموذج الخطوات الخمس للاعتراف بالإيراد</td>
+</tr>
+<tr class="odd">
+<td><strong>IFRS 16</strong></td>
+<td>عقود الإيجار</td>
+<td>(انظر أعلاه)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="نموذج-الخطوات-الخمس-للاعتراف-بالإيراد-ifrs-15">4.1 نموذج الخطوات الخمس للاعتراف بالإيراد (IFRS 15)</h2>
+<ol type="1">
+<li>تحديد العقد مع العميل</li>
+<li>تحديد التزامات الأداء المنفصلة في العقد</li>
+<li>تحديد سعر المعاملة (Transaction Price)</li>
+<li>توزيع سعر المعاملة على التزامات الأداء</li>
+<li>الاعتراف بالإيراد عند (أو أثناء) الوفاء بكل التزام أداء</li>
+</ol>
+<h2 id="ifrs-مقابل-us-gaap-أهم-الفروقات">4.2 IFRS مقابل US GAAP — أهم الفروقات</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>النقطة</th>
+<th>IFRS</th>
+<th>US GAAP</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>طريقة تقييم المخزون LIFO</td>
+<td>غير مسموحة</td>
+<td>مسموحة</td>
+</tr>
+<tr class="even">
+<td>إعادة تقييم الأصول الثابتة</td>
+<td>مسموحة (نموذج إعادة التقييم)</td>
+<td>غير مسموحة عموماً (تكلفة تاريخية فقط)</td>
+</tr>
+<tr class="odd">
+<td>المبدأ العام</td>
+<td>مبني على المبادئ (Principles-Based)</td>
+<td>مبني على القواعد التفصيلية (Rules-Based)</td>
+</tr>
+<tr class="even">
+<td>اضمحلال القيمة (Impairment)</td>
+<td>يمكن عكس خسارة الاضمحلال (باستثناء الشهرة)</td>
+<td>لا يمكن عكسها بعد تسجيلها</td>
+</tr>
+<tr class="odd">
+<td>عرض قائمة الدخل</td>
+<td>لا يوجد بند “استثنائي” منفصل</td>
+<td>مشابه بعد التعديلات الأخيرة</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+  </div>
+</section>
+
+<section class="ledger-sheet" id="الجزء-الخامس-محاسبة-التكاليف-الشاملة-cost-accounting" data-chapter="5">
+  <header class="sheet-head">
+    <span class="folio-num">05</span>
+    <h1>الجزء الخامس: محاسبة التكاليف الشاملة (Cost Accounting)</h1>
+  </header>
+  <div class="sheet-body">
+
+<h2 id="الفرق-بين-المحاسبة-المالية-ومحاسبة-التكاليف-ومحاسبة-الإدارية">5.1 الفرق بين المحاسبة المالية ومحاسبة التكاليف ومحاسبة الإدارية</h2>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>المحاسبة المالية</th>
+<th>محاسبة التكاليف</th>
+<th>المحاسبة الإدارية</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>المستخدم</td>
+<td>خارجي (مستثمرون، بنوك)</td>
+<td>داخلي وخارجي</td>
+<td>داخلي (الإدارة) فقط</td>
+</tr>
+<tr class="even">
+<td>الإلزام بالمعايير</td>
+<td>إلزامي (IFRS/GAAP)</td>
+<td>غير إلزامي غالباً</td>
+<td>غير إلزامي</td>
+</tr>
+<tr class="odd">
+<td>التوقيت</td>
+<td>تاريخي (بعد وقوع الحدث)</td>
+<td>تاريخي وتقديري</td>
+<td>مستقبلي غالباً (تخطيط وقرارات)</td>
+</tr>
+<tr class="even">
+<td>الهدف</td>
+<td>عرض المركز المالي والأداء</td>
+<td>قياس وتحديد تكلفة المنتج/الخدمة</td>
+<td>اتخاذ القرارات والتخطيط والرقابة</td>
+</tr>
+</tbody>
+</table>
+<h2 id="تصنيفات-التكلفة-الأساسية">5.2 تصنيفات التكلفة الأساسية</h2>
+<h3 id="حسب-السلوك-cost-behavior">حسب السلوك (Cost Behavior)</h3>
+<ul>
+<li><strong>تكلفة ثابتة (Fixed Cost):</strong> لا تتغير بتغير حجم النشاط ضمن المدى الملائم (إيجار، رواتب إدارية)</li>
+<li><strong>تكلفة متغيرة (Variable Cost):</strong> تتغير طردياً مع حجم النشاط (مواد خام، عمولات)</li>
+<li><strong>تكلفة مختلطة (Mixed/Semi-Variable):</strong> تحتوي على جزء ثابت وجزء متغير (فاتورة الكهرباء)
+<ul>
+<li>تُفصل باستخدام <strong>طريقة أعلى وأدنى نقطة (High-Low Method):</strong></li>
+</ul>
+<pre><code>معدل التكلفة المتغيرة = (أعلى تكلفة – أدنى تكلفة) / (أعلى نشاط – أدنى نشاط)
+التكلفة الثابتة = إجمالي التكلفة – (معدل التكلفة المتغيرة × مستوى النشاط)</code></pre></li>
+</ul>
+<h3 id="حسب-العلاقة-بالمنتج-traceability">حسب العلاقة بالمنتج (Traceability)</h3>
+<ul>
+<li><strong>تكلفة مباشرة (Direct Cost):</strong> يمكن تتبعها مباشرة لمنتج/قسم معين (مواد مباشرة، أجور مباشرة)</li>
+<li><strong>تكلفة غير مباشرة (Indirect Cost):</strong> لا يمكن تتبعها مباشرة، تُوزَّع (التكاليف الصناعية غير المباشرة/Overhead)</li>
+</ul>
+<h3 id="حسب-عناصر-التكلفة-الصناعية">حسب عناصر التكلفة الصناعية</h3>
+<pre><code>تكلفة التصنيع الأولية (Prime Cost) = مواد مباشرة + أجور مباشرة
+تكلفة التحويل (Conversion Cost) = أجور مباشرة + تكاليف صناعية غير مباشرة
+إجمالي تكلفة التصنيع = مواد مباشرة + أجور مباشرة + تكاليف صناعية غير مباشرة (Overhead)</code></pre>
+<h3 id="تصنيفات-أخرى-مهمة-للمقابلات">تصنيفات أخرى مهمة للمقابلات</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>المصطلح</th>
+<th>الشرح</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>التكلفة الغارقة (Sunk Cost)</strong></td>
+<td>تكلفة سابقة أُنفقت ولا يمكن استرجاعها — غير ملائمة لاتخاذ القرار</td>
+</tr>
+<tr class="even">
+<td><strong>تكلفة الفرصة البديلة (Opportunity Cost)</strong></td>
+<td>العائد المفقود من عدم اختيار البديل الأفضل التالي</td>
+</tr>
+<tr class="odd">
+<td><strong>التكلفة الملائمة (Relevant Cost)</strong></td>
+<td>تكلفة مستقبلية تختلف باختلاف البدائل — أساس اتخاذ القرار</td>
+</tr>
+<tr class="even">
+<td><strong>التكلفة الحدية (Marginal Cost)</strong></td>
+<td>تكلفة إنتاج وحدة إضافية واحدة</td>
+</tr>
+<tr class="odd">
+<td><strong>تكلفة الفرصة الضائعة مقابل التكلفة الإضافية (Incremental Cost)</strong></td>
+<td>الفرق في التكلفة بين بديلين</td>
+</tr>
+<tr class="even">
+<td><strong>التكلفة القابلة للتجنب/غير القابلة للتجنب (Avoidable/Unavoidable)</strong></td>
+<td>تُستخدم في قرارات إلغاء خط إنتاج أو قسم</td>
+</tr>
+</tbody>
+</table>
+<h2 id="أنظمة-تحديد-التكلفة-costing-systems">5.3 أنظمة تحديد التكلفة (Costing Systems)</h2>
+<h3 id="أ-نظام-تكاليف-الأوامر-الإنتاجية-job-order-costing">أ) نظام تكاليف الأوامر الإنتاجية (Job Order Costing)</h3>
+<p>يُستخدم عند إنتاج منتجات مميزة حسب طلب العميل (مصانع الأثاث المخصص، مكاتب المحاماة، شركات المقاولات). - تُجمَّع التكاليف لكل أمر إنتاج على حدة عبر <strong>بطاقة تكلفة الأمر (Job Cost Sheet)</strong> - التكاليف الصناعية غير المباشرة تُحمَّل بمعدل تحميل محدد مسبقاً (Predetermined Overhead Rate):</p>
+<pre><code>معدل التحميل المحدد مسبقاً = التكاليف الصناعية غير المباشرة المقدرة / أساس التحميل المقدر (ساعات عمل، ساعات آلة...)</code></pre>
+<h3 id="ب-نظام-تكاليف-المراحل-الإنتاجية-process-costing">ب) نظام تكاليف المراحل الإنتاجية (Process Costing)</h3>
+<p>يُستخدم عند إنتاج منتجات متجانسة بكميات كبيرة عبر مراحل متتالية (مصانع الأسمنت، البتروكيماويات، الأغذية). - تُحسب <strong>تكلفة الوحدة المكافئة (Equivalent Units of Production - EUP)</strong> لأن بعض الوحدات تكون تحت التشغيل (غير مكتملة) في نهاية الفترة - طريقتان لحساب EUP: - <strong>المتوسط المرجح (Weighted Average):</strong> يدمج تكاليف بداية المدة مع تكاليف الفترة الحالية - <strong>الوارد أولاً صادر أولاً (FIFO):</strong> يفصل تكاليف بداية المدة عن تكاليف الفترة الحالية</p>
+<p><strong>معادلة الوحدات المكافئة (طريقة المتوسط المرجح):</strong></p>
+<pre><code>EUP = الوحدات المكتملة والمحوَّلة + (الوحدات تحت التشغيل آخر المدة × نسبة الإتمام)
+تكلفة الوحدة = إجمالي التكاليف / EUP</code></pre>
+<h3 id="ج-نظام-التكاليف-على-أساس-الأنشطة-activity-based-costing---abc">ج) نظام التكاليف على أساس الأنشطة (Activity-Based Costing - ABC)</h3>
+<p>يُوزِّع التكاليف الصناعية غير المباشرة بناءً على <strong>الأنشطة (Cost Drivers)</strong> المسببة للتكلفة بدلاً من أساس تحميل واحد (مثل ساعات العمل)، مما يعطي دقة أعلى خصوصاً في بيئات الإنتاج المتنوع. <strong>خطوات ABC:</strong> 1. تحديد الأنشطة الرئيسية (Setup، فحص جودة، مناولة مواد…) 2. تجميع التكاليف لكل نشاط (Activity Cost Pool) 3. تحديد مسبب التكلفة (Cost Driver) لكل نشاط 4. حساب معدل التحميل لكل نشاط = تكلفة النشاط / إجمالي مسبب التكلفة 5. تحميل التكلفة على المنتجات حسب استهلاكها الفعلي لكل مسبب</p>
+<h3 id="د-نظام-التكاليف-المعيارية-standard-costing">د) نظام التكاليف المعيارية (Standard Costing)</h3>
+<p>تحديد تكاليف معيارية مسبقاً (مواد، أجور، تكاليف صناعية) للمقارنة مع التكلفة الفعلية واستخراج <strong>الانحرافات (Variances)</strong>.</p>
+<h3 id="هـ-التكلفة-المستهدفة-target-costing-والتكلفة-على-أساس-دورة-الحياة-life-cycle-costing">هـ) التكلفة المستهدفة (Target Costing) والتكلفة على أساس دورة الحياة (Life-Cycle Costing)</h3>
+<ul>
+<li>Target Costing: <code>التكلفة المستهدفة = سعر البيع المتوقع في السوق – هامش الربح المطلوب</code> — تُستخدم في مرحلة التصميم لضبط التكلفة قبل الإنتاج</li>
+<li>Life-Cycle Costing: تجميع كل التكاليف عبر دورة حياة المنتج الكاملة (تصميم، إنتاج، تسويق، ما بعد البيع)</li>
+</ul>
+<h2 id="طرق-تقييم-التكلفة-الكاملة-مقابل-التكلفة-المتغيرة">5.4 طرق تقييم التكلفة الكاملة مقابل التكلفة المتغيرة</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>التكلفة الكاملة (Absorption/Full Costing)</th>
+<th>التكلفة المتغيرة (Variable/Marginal Costing)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>التكاليف الصناعية الثابتة</td>
+<td>تُحمَّل على المنتج (جزء من تكلفة المخزون)</td>
+<td>تُعتبر مصروف الفترة مباشرة</td>
+</tr>
+<tr class="even">
+<td>الإلزام بالمعايير</td>
+<td>مطلوبة وفق IFRS/GAAP للتقارير الخارجية</td>
+<td>لأغراض داخلية فقط</td>
+</tr>
+<tr class="odd">
+<td>تأثير حجم المخزون على الربح</td>
+<td>الربح يتأثر بتغير مستوى المخزون</td>
+<td>الربح يتبع المبيعات فقط</td>
+</tr>
+</tbody>
+</table>
+<p><strong>العلاقة بين الربح بالطريقتين:</strong></p>
+<pre><code>إذا زاد الإنتاج عن المبيعات (زيادة المخزون): ربح Absorption &gt; ربح Variable
+إذا نقص الإنتاج عن المبيعات (نقص المخزون): ربح Absorption &lt; ربح Variable
+إذا تساوى الإنتاج والمبيعات: الربحان متساويان</code></pre>
+<h2 id="تحليل-التعادل-والعلاقة-بين-التكلفة-والحجم-والربح-cvp-analysis">5.5 تحليل التعادل والعلاقة بين التكلفة والحجم والربح (CVP Analysis)</h2>
+<p><strong>هامش المساهمة (Contribution Margin):</strong></p>
+<pre><code>هامش المساهمة للوحدة = سعر البيع للوحدة – التكلفة المتغيرة للوحدة
+نسبة هامش المساهمة = هامش المساهمة للوحدة / سعر البيع للوحدة</code></pre>
+<p><strong>نقطة التعادل (Break-Even Point):</strong></p>
+<pre><code>نقطة التعادل (بالوحدات) = إجمالي التكاليف الثابتة / هامش المساهمة للوحدة
+نقطة التعادل (بالقيمة) = إجمالي التكاليف الثابتة / نسبة هامش المساهمة</code></pre>
+<p><strong>تحقيق ربح مستهدف:</strong></p>
+<pre><code>عدد الوحدات المطلوبة = (التكاليف الثابتة + الربح المستهدف) / هامش المساهمة للوحدة</code></pre>
+<p><strong>هامش الأمان (Margin of Safety):</strong></p>
+<pre><code>هامش الأمان = المبيعات الفعلية (أو المتوقعة) – مبيعات نقطة التعادل
+نسبة هامش الأمان = هامش الأمان / المبيعات الفعلية</code></pre>
+<p><strong>درجة الرافعة التشغيلية (Degree of Operating Leverage - DOL):</strong></p>
+<pre><code>DOL = هامش المساهمة / صافي الربح التشغيلي</code></pre>
+<p>يقيس مدى حساسية الربح التشغيلي للتغير في المبيعات.</p>
+<h2 id="الموازنات-التخطيطية-budgeting">5.6 الموازنات التخطيطية (Budgeting)</h2>
+<p><strong>تسلسل إعداد الموازنة الشاملة (Master Budget):</strong> 1. موازنة المبيعات (Sales Budget) — نقطة البداية 2. موازنة الإنتاج (Production Budget) = مبيعات متوقعة + مخزون آخر مدة مستهدف – مخزون أول مدة 3. موازنة المواد المباشرة، الأجور المباشرة، التكاليف الصناعية غير المباشرة 4. موازنة تكلفة البضاعة المباعة 5. موازنة المصروفات البيعية والإدارية 6. قائمة الدخل التقديرية (Budgeted Income Statement) 7. الموازنة النقدية (Cash Budget) 8. الميزانية العمومية التقديرية (Budgeted Balance Sheet)</p>
+<p><strong>أنواع الموازنات:</strong> - <strong>الموازنة الثابتة (Static Budget):</strong> تُعد لمستوى نشاط واحد محدد مسبقاً - <strong>الموازنة المرنة (Flexible Budget):</strong> تُعدّل تلقائياً حسب مستوى النشاط الفعلي — أساس تحليل الانحرافات الدقيق - <strong>الموازنة الصفرية (Zero-Based Budgeting):</strong> تبدأ كل بند من الصفر ويُبرَّر بالكامل كل فترة، بدل الاعتماد على أرقام السنة السابقة</p>
+<h2 id="تحليل-الانحرافات-variance-analysis">5.7 تحليل الانحرافات (Variance Analysis)</h2>
+<p><strong>انحراف المواد المباشرة:</strong></p>
+<pre><code>انحراف سعر المواد = (السعر الفعلي – السعر المعياري) × الكمية الفعلية المشتراة
+انحراف كمية المواد = (الكمية الفعلية – الكمية المعيارية) × السعر المعياري</code></pre>
+<p><strong>انحراف الأجور المباشرة:</strong></p>
+<pre><code>انحراف معدل الأجر = (المعدل الفعلي – المعدل المعياري) × الساعات الفعلية
+انحراف كفاءة العمل = (الساعات الفعلية – الساعات المعيارية) × المعدل المعياري</code></pre>
+<p><strong>انحراف التكاليف الصناعية غير المباشرة:</strong></p>
+<pre><code>انحراف الإنفاق (Spending Variance) = التكلفة الفعلية – (معدل التحميل المعياري × الساعات الفعلية) [للجزء المتغير]
+انحراف الحجم (Volume Variance) = يخص الجزء الثابت فقط، ناتج عن الفرق بين الطاقة العادية والطاقة الفعلية المستغلة
+انحراف الكفاءة = (الساعات الفعلية – الساعات المعيارية) × معدل التحميل المعياري</code></pre>
+<p><strong>تفسير الانحرافات:</strong> - <strong>انحراف موات (Favorable - F):</strong> التكلفة الفعلية أقل من المعيارية (أو الإيراد الفعلي أعلى) - <strong>انحراف غير موات (Unfavorable - U):</strong> العكس</p>
+<h2 id="التسعير-على-أساس-التكلفة-الإضافية-cost-plus-pricing">5.8 التسعير على أساس التكلفة الإضافية (Cost-Plus Pricing)</h2>
+<pre><code>سعر البيع = التكلفة الكاملة للوحدة × (1 + نسبة هامش الربح المطلوبة)</code></pre>
+<h2 id="اتخاذ-القرارات-الإدارية-قصيرة-الأجل-relevant-costing-for-decisions">5.9 اتخاذ القرارات الإدارية قصيرة الأجل (Relevant Costing for Decisions)</h2>
+<p>أهم القرارات التي تُطرح كأسئلة مقابلة: 1. <strong>قبول أو رفض طلبية خاصة (Special Order):</strong> يُقارن السعر المعروض بالتكلفة المتغيرة فقط (بافتراض وجود طاقة عاطلة) 2. <strong>الصنع أو الشراء (Make or Buy):</strong> مقارنة التكلفة المتغيرة للصنع + التكلفة الثابتة القابلة للتجنب مقابل سعر الشراء الخارجي 3. <strong>الاستمرار أو إلغاء خط إنتاج/قسم (Keep or Drop):</strong> مقارنة هامش المساهمة المفقود مقابل التكاليف الثابتة القابلة للتجنب 4. <strong>البيع عند نقطة الانفصال أو التصنيع الإضافي (Sell or Process Further):</strong> يُقارن الإيراد الإضافي بالتكلفة الإضافية بعد نقطة الانفصال (Split-off Point) فقط — تكاليف ما قبل نقطة الانفصال (Joint Costs) غير ملائمة للقرار 5. <strong>الاستخدام الأمثل للموارد النادرة (Limited Resource/Constraint):</strong> الترتيب حسب هامش المساهمة <strong>لكل وحدة من المورد النادر</strong> وليس لكل وحدة منتج</p>
+<h2 id="توزيع-التكاليف-المشتركة-والتكاليف-الإضافية-joint-by-product-costing">5.10 توزيع التكاليف المشتركة والتكاليف الإضافية (Joint &amp; By-Product Costing)</h2>
+<ul>
+<li><strong>التكاليف المشتركة (Joint Costs):</strong> تكاليف تُنفق قبل نقطة الانفصال لإنتاج أكثر من منتج معاً</li>
+<li>طرق التوزيع: القيمة البيعية النسبية عند نقطة الانفصال، صافي القيمة البيعية القابلة للتحقق (NRV)، الوحدات المادية</li>
+<li><strong>المنتج الثانوي (By-Product):</strong> منتج ذو قيمة بيعية منخفضة نسبياً يُعالَج غالباً بخصم صافي قيمته البيعية من تكلفة المنتج الرئيسي</li>
+</ul>
+<h2 id="نظام-التكلفة-المستهدفة-الحديثة-leanjitkaizen-costing">5.11 نظام التكلفة المستهدفة الحديثة (Lean/JIT/Kaizen Costing)</h2>
+<ul>
+<li><strong>Just-In-Time (JIT):</strong> تقليل المخزون إلى الحد الأدنى عبر الإنتاج حسب الطلب الفعلي، يقلل تكاليف التخزين ويزيد الحاجة لجودة الموردين</li>
+<li><strong>Kaizen Costing:</strong> التحسين المستمر التدريجي لخفض التكلفة بعد بدء الإنتاج (بعكس Target Costing الذي يُطبَّق قبل الإنتاج)</li>
+<li><strong>Theory of Constraints (TOC):</strong> التركيز على معالجة “القيد” (Bottleneck) الذي يحد من طاقة النظام ككل</li>
+</ul>
+<hr />
+
+  </div>
+</section>
+
+<section class="ledger-sheet" id="الجزء-السادس-التحليل-المالي-والنسب-المالية-financial-statement-analysis" data-chapter="6">
+  <header class="sheet-head">
+    <span class="folio-num">06</span>
+    <h1>الجزء السادس: التحليل المالي والنسب المالية (Financial Statement Analysis)</h1>
+  </header>
+  <div class="sheet-body">
+
+<h2 id="أدوات-التحليل-المالي">6.1 أدوات التحليل المالي</h2>
+<ul>
+<li><strong>التحليل الأفقي (Horizontal/Trend Analysis):</strong> مقارنة البنود عبر عدة فترات لمعرفة اتجاه التغير</li>
+<li><strong>التحليل الرأسي (Vertical/Common-Size Analysis):</strong> التعبير عن كل بند كنسبة مئوية من إجمالي الأصول (في الميزانية) أو من صافي المبيعات (في قائمة الدخل)</li>
+<li><strong>تحليل النسب المالية (Ratio Analysis):</strong> مقارنة بنود القوائم المالية ببعضها</li>
+</ul>
+<h2 id="نسب-السيولة-liquidity-ratios">6.2 نسب السيولة (Liquidity Ratios)</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>النسبة</th>
+<th>المعادلة</th>
+<th>الدلالة</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>نسبة التداول (Current Ratio)</td>
+<td>الأصول المتداولة / الخصوم المتداولة</td>
+<td>قدرة المنشأة على سداد التزاماتها قصيرة الأجل</td>
+</tr>
+<tr class="even">
+<td>نسبة السيولة السريعة (Quick/Acid-Test Ratio)</td>
+<td>(الأصول المتداولة – المخزون) / الخصوم المتداولة</td>
+<td>السيولة دون الاعتماد على بيع المخزون</td>
+</tr>
+<tr class="odd">
+<td>النسبة النقدية (Cash Ratio)</td>
+<td>(النقدية + ما يعادلها) / الخصوم المتداولة</td>
+<td>أكثر النسب تحفظاً</td>
+</tr>
+<tr class="even">
+<td>رأس المال العامل (Working Capital)</td>
+<td>الأصول المتداولة – الخصوم المتداولة</td>
+<td>فائض السيولة المتاح للتشغيل</td>
+</tr>
+</tbody>
+</table>
+<h2 id="نسب-النشاطالكفاءة-activityefficiency-ratios">6.3 نسب النشاط/الكفاءة (Activity/Efficiency Ratios)</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>النسبة</th>
+<th>المعادلة</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>معدل دوران المخزون</td>
+<td>تكلفة البضاعة المباعة / متوسط المخزون</td>
+</tr>
+<tr class="even">
+<td>متوسط فترة تخزين المخزون (أيام)</td>
+<td>365 / معدل دوران المخزون</td>
+</tr>
+<tr class="odd">
+<td>معدل دوران الذمم المدينة</td>
+<td>صافي المبيعات الآجلة / متوسط الذمم المدينة</td>
+</tr>
+<tr class="even">
+<td>متوسط فترة التحصيل (أيام)</td>
+<td>365 / معدل دوران الذمم المدينة</td>
+</tr>
+<tr class="odd">
+<td>معدل دوران الذمم الدائنة</td>
+<td>المشتريات الآجلة / متوسط الذمم الدائنة</td>
+</tr>
+<tr class="even">
+<td>متوسط فترة السداد (أيام)</td>
+<td>365 / معدل دوران الذمم الدائنة</td>
+</tr>
+<tr class="odd">
+<td>معدل دوران الأصول</td>
+<td>صافي المبيعات / متوسط إجمالي الأصول</td>
+</tr>
+<tr class="even">
+<td>دورة التحويل النقدي (Cash Conversion Cycle)</td>
+<td>فترة تخزين المخزون + فترة التحصيل – فترة السداد</td>
+</tr>
+</tbody>
+</table>
+<h2 id="نسب-المديونيةالرفع-المالي-leveragesolvency-ratios">6.4 نسب المديونية/الرفع المالي (Leverage/Solvency Ratios)</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>النسبة</th>
+<th>المعادلة</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>نسبة الدين إلى حقوق الملكية (Debt to Equity)</td>
+<td>إجمالي الخصوم / حقوق الملكية</td>
+</tr>
+<tr class="even">
+<td>نسبة الدين إلى إجمالي الأصول (Debt Ratio)</td>
+<td>إجمالي الخصوم / إجمالي الأصول</td>
+</tr>
+<tr class="odd">
+<td>نسبة تغطية الفوائد (Interest Coverage)</td>
+<td>الربح قبل الفوائد والضرائب (EBIT) / مصروف الفوائد</td>
+</tr>
+<tr class="even">
+<td>نسبة حقوق الملكية إلى الأصول</td>
+<td>حقوق الملكية / إجمالي الأصول</td>
+</tr>
+</tbody>
+</table>
+<h2 id="نسب-الربحية-profitability-ratios">6.5 نسب الربحية (Profitability Ratios)</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>النسبة</th>
+<th>المعادلة</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>هامش مجمل الربح (Gross Profit Margin)</td>
+<td>مجمل الربح / صافي المبيعات</td>
+</tr>
+<tr class="even">
+<td>هامش الربح التشغيلي (Operating Margin)</td>
+<td>الربح التشغيلي / صافي المبيعات</td>
+</tr>
+<tr class="odd">
+<td>هامش صافي الربح (Net Profit Margin)</td>
+<td>صافي الربح / صافي المبيعات</td>
+</tr>
+<tr class="even">
+<td>العائد على الأصول (ROA)</td>
+<td>صافي الربح / متوسط إجمالي الأصول</td>
+</tr>
+<tr class="odd">
+<td>العائد على حقوق الملكية (ROE)</td>
+<td>صافي الربح / متوسط حقوق الملكية</td>
+</tr>
+<tr class="even">
+<td>العائد على رأس المال المستثمر (ROIC)</td>
+<td>الربح التشغيلي بعد الضريبة / (الدين + حقوق الملكية)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>نموذج تحليل دوبونت (DuPont Analysis):</strong></p>
+<pre><code>ROE = هامش صافي الربح × معدل دوران الأصول × مضاعف حقوق الملكية
+ROE = (صافي الربح/المبيعات) × (المبيعات/الأصول) × (الأصول/حقوق الملكية)</code></pre>
+<h2 id="نسب-السوقسوق-المال-market-value-ratios">6.6 نسب السوق/سوق المال (Market Value Ratios)</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>النسبة</th>
+<th>المعادلة</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ربحية السهم (EPS)</td>
+<td>(صافي الربح – توزيعات الأسهم الممتازة) / متوسط عدد الأسهم العادية القائمة</td>
+</tr>
+<tr class="even">
+<td>مضاعف الربحية (P/E Ratio)</td>
+<td>سعر السهم السوقي / ربحية السهم</td>
+</tr>
+<tr class="odd">
+<td>القيمة الدفترية للسهم (Book Value per Share)</td>
+<td>حقوق الملكية العادية / عدد الأسهم القائمة</td>
+</tr>
+<tr class="even">
+<td>عائد التوزيعات (Dividend Yield)</td>
+<td>توزيعات السهم / سعر السهم السوقي</td>
+</tr>
+<tr class="odd">
+<td>نسبة توزيع الأرباح (Payout Ratio)</td>
+<td>توزيعات الأرباح / صافي الربح</td>
+</tr>
+</tbody>
+</table>
+<h2 id="نقاط-تحليل-مهمة-تسأل-كثيرا">6.7 نقاط تحليل مهمة تُسأل كثيراً</h2>
+<ul>
+<li><strong>متى تكون نسبة التداول المرتفعة جداً سيئة؟</strong> عندما تدل على تراكم مخزون بطيء الحركة أو سوء استغلال للأصول بدل استثمارها</li>
+<li><strong>الفرق بين الربحية والسيولة:</strong> منشأة قد تكون مربحة لكنها تعاني من نقص السيولة (خصوصاً مع نمو الذمم المدينة والمخزون بسرعة)</li>
+<li><strong>أثر الرافعة المالية على ROE:</strong> زيادة الدين قد ترفع ROE (إن كان العائد على الاستثمار أعلى من تكلفة الدين) لكنها تزيد المخاطر المالية</li>
+</ul>
+<hr />
+
+  </div>
+</section>
+
+<section class="ledger-sheet" id="الجزء-السابع-أساسيات-cma-certified-management-accountant" data-chapter="7">
+  <header class="sheet-head">
+    <span class="folio-num">07</span>
+    <h1>الجزء السابع: أساسيات CMA (Certified Management Accountant)</h1>
+  </header>
+  <div class="sheet-body">
+
+<h2 id="cma-part-1-financial-planning-performance-analytics">7.1 CMA Part 1 — Financial Planning, Performance &amp; Analytics</h2>
+<ol type="1">
+<li><strong>External Financial Reporting Decisions:</strong> قوائم مالية، مخزون، أصول ثابتة، التزامات، حقوق ملكية</li>
+<li><strong>Planning, Budgeting &amp; Forecasting:</strong> الموازنات، التنبؤ، تحليل الانحدار، Master Budget</li>
+<li><strong>Performance Management:</strong> الانحرافات، مقاييس الأداء المتوازن (Balanced Scorecard)، مراكز المسؤولية</li>
+<li><strong>Cost Management:</strong> ABC، Lean، Standard Costing، Joint/By-product Costing</li>
+<li><strong>Internal Controls:</strong> إطار COSO، تقييم المخاطر، الرقابة الداخلية على التقارير المالية</li>
+<li><strong>Technology &amp; Analytics:</strong> أنظمة ERP، تحليل البيانات الضخمة، الأتمتة</li>
+</ol>
+<h2 id="cma-part-2-strategic-financial-management">7.2 CMA Part 2 — Strategic Financial Management</h2>
+<ol type="1">
+<li><strong>Financial Statement Analysis:</strong> النسب المالية، تحليل الاتجاهات، القيمة السوقية</li>
+<li><strong>Corporate Finance:</strong> تكلفة رأس المال (WACC)، هيكل رأس المال، إدارة رأس المال العامل</li>
+<li><strong>Decision Analysis:</strong> التسعير، القرارات قصيرة الأجل، تحليل الحساسية</li>
+<li><strong>Risk Management:</strong> أنواع المخاطر (تشغيلية، مالية، استراتيجية)، إدارة المخاطر المؤسسية (ERM)</li>
+<li><strong>Investment Decisions:</strong> الموازنة الرأسمالية (Capital Budgeting) — NPV، IRR، Payback Period</li>
+<li><strong>Professional Ethics:</strong> ميثاق IMA للسلوك المهني الأخلاقي</li>
+</ol>
+<h2 id="مفاهيم-مهمة-في-cma-للمقابلات">7.3 مفاهيم مهمة في CMA للمقابلات</h2>
+<p><strong>تكلفة رأس المال المرجحة (WACC):</strong></p>
+<pre><code>WACC = (E/V × Re) + (D/V × Rd × (1 – Tax Rate))
+E = القيمة السوقية لحقوق الملكية، D = القيمة السوقية للدين، V = E + D
+Re = تكلفة حقوق الملكية، Rd = تكلفة الدين قبل الضريبة</code></pre>
+<p><strong>صافي القيمة الحالية (Net Present Value - NPV):</strong></p>
+<pre><code>NPV = مجموع (التدفقات النقدية المستقبلية مخصومة بمعدل الخصم) – الاستثمار الأولي
+قاعدة القرار: اقبل المشروع إذا NPV &gt; صفر</code></pre>
+<p><strong>معدل العائد الداخلي (Internal Rate of Return - IRR):</strong> معدل الخصم الذي يجعل NPV = صفر. قاعدة القرار: اقبل المشروع إذا IRR &gt; تكلفة رأس المال.</p>
+<p><strong>فترة الاسترداد (Payback Period):</strong></p>
+<pre><code>فترة الاسترداد = الاستثمار الأولي / صافي التدفق النقدي السنوي (في حالة التدفقات المتساوية)</code></pre>
+<p>عيبها: تتجاهل القيمة الزمنية للنقود والتدفقات بعد فترة الاسترداد (يُعالَج جزئياً بـ Discounted Payback Period).</p>
+<p><strong>مؤشر الربحية (Profitability Index):</strong></p>
+<pre><code>PI = القيمة الحالية للتدفقات النقدية المستقبلية / الاستثمار الأولي</code></pre>
+<p><strong>إطار COSO للرقابة الداخلية (5 مكونات):</strong> 1. بيئة الرقابة (Control Environment) 2. تقييم المخاطر (Risk Assessment) 3. أنشطة الرقابة (Control Activities) 4. المعلومات والاتصال (Information &amp; Communication) 5. أنشطة المراقبة (Monitoring Activities)</p>
+<p><strong>بطاقة الأداء المتوازن (Balanced Scorecard) — 4 محاور:</strong> 1. المحور المالي (Financial) 2. محور العملاء (Customer) 3. محور العمليات الداخلية (Internal Business Process) 4. محور التعلم والنمو (Learning &amp; Growth)</p>
+<hr />
+
+  </div>
+</section>
+
+<section class="ledger-sheet" id="الجزء-الثامن-بنك-أسئلة-المقابلات-مع-الإجابات-النموذجية" data-chapter="8">
+  <header class="sheet-head">
+    <span class="folio-num">08</span>
+    <h1>الجزء الثامن: بنك أسئلة المقابلات مع الإجابات النموذجية</h1>
+  </header>
+  <div class="sheet-body">
+
+<h2 id="أسئلة-في-مبادئ-المحاسبة-والقوائم-المالية">8.1 أسئلة في مبادئ المحاسبة والقوائم المالية</h2>
+<p><strong>س: ما الفرق بين المصروف الرأسمالي (Capital Expenditure) والمصروف الإيرادي (Revenue Expenditure)؟</strong> ج: المصروف الرأسمالي ينتج عنه منفعة تمتد لأكثر من فترة محاسبية ويُرسمل كأصل (مثل شراء آلة)، بينما المصروف الإيرادي منفعته تخص الفترة الحالية فقط ويُحمَّل مباشرة على قائمة الدخل (مثل صيانة دورية).</p>
+<p><strong>س: اشرح الفرق بين الإهلاك (Depreciation) والاستهلاك (Amortization) والنضوب (Depletion).</strong> ج: الإهلاك يخص الأصول الثابتة الملموسة (مباني، آلات)، الاستهلاك يخص الأصول غير الملموسة (براءات اختراع، شهرة قابلة للاستهلاك)، والنضوب يخص الموارد الطبيعية القابلة للنفاد (مناجم، آبار نفط).</p>
+<p><strong>س: ما هي طرق حساب الإهلاك؟</strong> ج: القسط الثابت (Straight-Line)، القسط المتناقص/الرصيد المتناقص (Declining Balance)، طريقة وحدات الإنتاج (Units of Production)، وطريقة مجموع أرقام السنوات (Sum-of-Years-Digits).</p>
+<pre><code>القسط الثابت = (تكلفة الأصل – القيمة التخريدية) / العمر الإنتاجي</code></pre>
+<p><strong>س: ما الفرق بين المخصص (Provision) والاحتياطي (Reserve)؟</strong> ج: المخصص التزام محتمل مقابل مصروف أو خسارة متوقعة (يُخصم من الأرباح قبل توزيعها، مثل مخصص الديون المشكوك فيها)، بينما الاحتياطي هو جزء من الأرباح المحققة يُجنَّب لأغراض معينة (كاحتياطي قانوني أو اختياري) بعد تحديد الربح.</p>
+<p><strong>س: كيف تعالج محاسبياً خطأ اكتُشف في فترة سابقة؟</strong> ج: وفق IAS 8، يُصحَّح الخطأ الجوهري بأثر رجعي بإعادة عرض الأرصدة الافتتاحية للفترة المقارنة، وليس بتضمينه في ربح الفترة الحالية.</p>
+<p><strong>س: ما هي الفروقات الرئيسية بين طريقة FIFO والمتوسط المرجح في تقييم المخزون؟</strong> ج: FIFO يفترض أن أول وحدات دخلت هي أول ما يخرج، فتظهر تكلفة البضاعة المباعة بأسعار قديمة والمخزون المتبقي بأسعار حديثة (مناسب وقت التضخم لرفع الأرباح الدفترية). المتوسط المرجح يوزع التكلفة على أساس متوسط سعر جميع الوحدات المتاحة. (ملاحظة: LIFO غير مسموح وفق IFRS لكنه مسموح وفق US GAAP).</p>
+<p><strong>س: ما هو الفرق بين حقوق الملكية وحقوق الأقلية (Non-Controlling Interest)؟</strong> ج: حقوق الملكية تمثل حصة الشركة الأم، بينما حقوق الأقلية تمثل حصة المساهمين الآخرين في الشركة التابعة غير المملوكة بالكامل، وتظهر ضمن حقوق الملكية في القوائم الموحدة لكن منفصلة عن حقوق الشركة الأم.</p>
+<p><strong>س: كيف تُعالج الشهرة (Goodwill) محاسبياً؟</strong> ج: تنشأ عند الاستحواذ عندما يكون سعر الشراء أعلى من صافي القيمة العادلة للأصول المحددة المستحوذ عليها. لا تُستهلك (Amortize) بل يتم اختبارها سنوياً للاضمحلال (Impairment Test) وفق IAS 36.</p>
+<p><strong>س: ما هي مكونات القوائم المالية الكاملة وفق IAS 1؟</strong> ج: قائمة المركز المالي، قائمة الدخل الشامل (الربح/الخسارة + الدخل الشامل الآخر)، قائمة التغير في حقوق الملكية، قائمة التدفقات النقدية، والإيضاحات المتممة، بالإضافة إلى قائمة مركز مالي لفترة مقارنة إضافية عند إعادة تصنيف بنود بأثر رجعي.</p>
+<p><strong>س: ما الفرق بين الدخل الشامل الآخر (OCI) وصافي الربح؟</strong> ج: صافي الربح يشمل الإيرادات والمصروفات المعترف بها في قائمة الدخل. الدخل الشامل الآخر يشمل بنوداً لا تمر عبر قائمة الدخل مباشرة مثل فروق ترجمة العملات، إعادة تقييم الأصول الثابتة، وأرباح/خسائر بعض الأدوات المالية بالقيمة العادلة.</p>
+<h2 id="أسئلة-في-محاسبة-التكاليف">8.2 أسئلة في محاسبة التكاليف</h2>
+<p><strong>س: ما الفرق بين نظام تكاليف الأوامر ونظام تكاليف المراحل؟</strong> ج: (انظر القسم 5.3 بالتفصيل) — الأوامر للمنتجات المميزة حسب الطلب، والمراحل للمنتجات المتجانسة المستمرة.</p>
+<p><strong>س: كيف تحسب معدل التحميل المحدد مسبقاً للتكاليف الصناعية غير المباشرة، ولماذا نستخدمه بدل التكلفة الفعلية؟</strong> ج: <code>= التكاليف الصناعية غير المباشرة المقدرة / أساس التحميل المقدر</code>. نستخدمه لأن التكلفة الفعلية للـ Overhead لا تُعرف إلا في نهاية الفترة، بينما الإدارة تحتاج تسعير المنتجات وتحديد تكلفتها أولاً بأول خلال الفترة.</p>
+<p><strong>س: ما الفرق بين Absorption Costing وVariable Costing، وأيهما مطلوب للتقارير الخارجية؟</strong> ج: (انظر القسم 5.4) — Absorption Costing هو المطلوب وفق IFRS/GAAP للتقارير الخارجية لأنه يحمّل التكاليف الثابتة على المنتج، بينما Variable Costing يُستخدم داخلياً لدعم القرارات الإدارية.</p>
+<p><strong>س: كيف تحدد نقطة التعادل، وما فائدتها للإدارة؟</strong> ج: (انظر القسم 5.5) نقطة التعادل = التكاليف الثابتة / هامش المساهمة للوحدة. تفيد الإدارة في تحديد الحد الأدنى من المبيعات اللازم لتغطية التكاليف، وتقييم أثر التغير في السعر أو التكلفة على الربحية.</p>
+<p><strong>س: منتج يمكن بيعه عند نقطة الانفصال بسعر معين أو معالجته إضافياً وبيعه بسعر أعلى، كيف تقرر؟</strong> ج: قارن الإيراد الإضافي الناتج عن المعالجة الإضافية بالتكلفة الإضافية بعد نقطة الانفصال فقط؛ إذا كان الإيراد الإضافي أكبر من التكلفة الإضافية فالمعالجة الإضافية مجدية. التكاليف المشتركة (Joint Costs) قبل نقطة الانفصال غير ملائمة (Irrelevant) لهذا القرار لأنها غارقة بالفعل عند اتخاذه.</p>
+<p><strong>س: ما هي التكلفة الملائمة (Relevant Cost) ولماذا التكلفة الغارقة غير ملائمة لاتخاذ القرار؟</strong> ج: التكلفة الملائمة هي تكلفة مستقبلية تختلف بين البدائل المتاحة. التكلفة الغارقة أُنفقت في الماضي ولا تتغير بأي قرار حالي أو مستقبلي، لذا لا تؤثر على القرار الاقتصادي الرشيد رغم أنها قد تؤثر نفسياً على متخذ القرار.</p>
+<p><strong>س: كيف تُحلل انحراف كمية المواد المباشرة، وما تفسير كونه غير موات (Unfavorable)؟</strong> ج: <code>= (الكمية الفعلية – الكمية المعيارية) × السعر المعياري</code>. الانحراف غير الموات يعني استهلاك مواد أكثر من المعيار المحدد، وقد يعود لجودة مواد رديئة، سوء تدريب العمال، أو أعطال آلات.</p>
+<p><strong>س: متى تُقبل طلبية خاصة بسعر أقل من التكلفة الكاملة للوحدة؟</strong> ج: عندما يكون السعر المعروض أعلى من التكلفة المتغيرة للوحدة، وتوجد طاقة إنتاجية عاطلة كافية، ولا تؤثر الطلبية على أسعار السوق العادية أو تخلق منافسة مع عملاء حاليين.</p>
+<p><strong>س: ما هو نظام ABC ولماذا يُعتبر أدق من الأنظمة التقليدية؟</strong> ج: (انظر القسم 5.3-ج) يوزع التكاليف غير المباشرة حسب الأنشطة الفعلية المسببة للتكلفة بدل أساس تحميل واحد عام، فيعطي تكلفة أدق للمنتجات خصوصاً في بيئات التصنيع المتنوعة ذات الأحجام والتعقيد المختلف.</p>
+<h2 id="أسئلة-في-المعايير-الدولية-ifrs">8.3 أسئلة في المعايير الدولية IFRS</h2>
+<p><strong>س: كيف تعالج عقود الإيجار وفق IFRS 16؟</strong> ج: يُلغي IFRS 16 التمييز التقليدي بين الإيجار التمويلي والتشغيلي لدى المستأجر؛ يُسجَّل تقريباً كل عقد إيجار كأصل “حق استخدام” (Right-of-Use Asset) والتزام إيجار مقابل في الميزانية، ويُهلَك الأصل ويُحمَّل جزء الفائدة من الالتزام على قائمة الدخل. الاستثناءات: عقود قصيرة الأجل (≤12 شهر) والأصول منخفضة القيمة.</p>
+<p><strong>س: متى يُسجَّل مخصص (Provision) وفق IAS 37؟</strong> ج: عند توفر ثلاثة شروط معاً: وجود التزام حالي (قانوني أو استداللي) ناتج عن حدث ماضٍ، احتمال تدفق موارد خارجة لتسويته أكبر من 50%، وإمكانية تقدير قيمته بشكل موثوق. إذا كان الاحتمال أقل من الأرجح، يُفصح عنه كالتزام محتمل فقط دون تسجيله كمخصص.</p>
+<p><strong>س: كيف تختبر اضمحلال قيمة الأصل وفق IAS 36؟</strong> ج: تُقارن القيمة الدفترية للأصل بالقيمة القابلة للاسترداد (وهي الأعلى من: القيمة العادلة ناقص تكاليف البيع، وقيمة الاستخدام أي القيمة الحالية للتدفقات النقدية المستقبلية). إذا كانت القيمة الدفترية أعلى، يُسجَّل الفرق كخسارة اضمحلال.</p>
+<p><strong>س: ما هي الخطوات الخمس للاعتراف بالإيراد وفق IFRS 15؟</strong> ج: (انظر القسم 4.1)</p>
+<p><strong>س: ما الفرق بين النموذج المختلط لتصنيف الأصول المالية وفق IFRS 9؟</strong> ج: تُصنَّف الأصول المالية حسب نموذج الأعمال (الاحتفاظ لتحصيل التدفقات، أو للبيع، أو للمتاجرة) وخصائص التدفقات النقدية التعاقدية، إلى ثلاث فئات: بالتكلفة المطفأة، بالقيمة العادلة من خلال الدخل الشامل الآخر، وبالقيمة العادلة من خلال الربح أو الخسارة.</p>
+<p><strong>س: ما الفرق بين الشركة التابعة والشركة الزميلة والاستثمار البسيط؟</strong> ج: التابعة: سيطرة تامة (عادة &gt;50% من حق التصويت) وتُدمَج بالكامل (Full Consolidation). الزميلة: تأثير جوهري (عادة 20%-50%) وتُحاسَب بطريقة حقوق الملكية (Equity Method). الاستثمار البسيط (&lt;20%): يُحاسَب وفق IFRS 9 بالقيمة العادلة أو التكلفة المطفأة.</p>
+<h2 id="أسئلة-في-التحليل-المالي">8.4 أسئلة في التحليل المالي</h2>
+<p><strong>س: شركة نسبة تداولها مرتفعة جداً (مثلاً 5:1)، هل هذا مؤشر جيد بالضرورة؟</strong> ج: ليس بالضرورة؛ قد يدل على تراكم مخزون بطيء الحركة، أو تجميد نقدية وأصول متداولة أخرى بدل استثمارها بكفاءة، مما يقلل العائد على الأصول. يجب تحليل مكونات الأصول المتداولة وليس الاكتفاء بالنسبة الإجمالية.</p>
+<p><strong>س: كيف يمكن لشركة أن تكون مربحة لكنها تواجه أزمة سيولة (Profitable but Illiquid)؟</strong> ج: عند تحقق أرباح محاسبية على أساس الاستحقاق (مبيعات آجلة لم تُحصَّل بعد، أو نمو سريع في المخزون والذمم المدينة) دون توليد تدفقات نقدية كافية فعلياً، أو عند استحقاق التزامات كبيرة قصيرة الأجل رغم وجود أرباح دفترية.</p>
+<p><strong>س: اشرح نموذج تحليل دوبونت وفائدته.</strong> ج: (انظر القسم 6.5) يفكك العائد على حقوق الملكية (ROE) إلى ثلاثة مسببات: الربحية (هامش الربح)، الكفاءة التشغيلية (دوران الأصول)، والرافعة المالية (مضاعف حقوق الملكية)، مما يوضح مصدر تحسن أو تراجع ROE بدقة أكبر من النظر إليه كرقم واحد.</p>
+<p><strong>س: ما تأثير زيادة الاستدانة على ROE ونسبة تغطية الفوائد؟</strong> ج: زيادة الدين قد ترفع ROE إذا كان العائد على الاستثمار أعلى من تكلفة الدين بعد الضريبة (أثر الرافعة المالية الإيجابي)، لكنها تخفض نسبة تغطية الفوائد وتزيد المخاطر المالية، خصوصاً في فترات تراجع الأرباح التشغيلية.</p>
+<h2 id="أسئلة-سلوكية-وعامة-شائعة-في-مقابلات-المحاسبة">8.5 أسئلة سلوكية وعامة شائعة في مقابلات المحاسبة</h2>
+<ul>
+<li>لماذا اخترت مجال المحاسبة؟</li>
+<li>حدثني عن موقف اكتشفت فيه خطأ محاسبياً جوهرياً وكيف تعاملت معه.</li>
+<li>كيف تتعامل مع ضغط إغلاق نهاية الشهر/السنة (Month-end/Year-end Close)؟</li>
+<li>ما الفرق بين العمل تحت GAAP والعمل تحت IFRS من واقع خبرتك؟</li>
+<li>كيف تتحقق من دقة التسويات البنكية (Bank Reconciliation)؟</li>
+<li>صف لي خطوات مطابقة حساب الذمم المدينة/الدائنة مع كشوف الأطراف الأخرى.</li>
+<li>كيف تتعامل مع زميل أو مدير يطلب منك تجاوز إجراء رقابي داخلي؟</li>
+</ul>
+<h2 id="مطابقة-الحساب-البنكي-bank-reconciliation-سؤال-كلاسيكي">8.6 مطابقة الحساب البنكي (Bank Reconciliation) — سؤال كلاسيكي</h2>
+<pre><code>الرصيد حسب دفاتر المنشأة
++ إشعارات دائنة لم تُسجَّل بعد (تحصيلات مباشرة، فوائد دائنة)
+– إشعارات مدينة لم تُسجَّل بعد (رسوم بنكية، شيكات مرتدة)
+= الرصيد المعدَّل حسب الدفاتر
+
+الرصيد حسب كشف البنك
++ ودائع في الطريق (Deposits in Transit)
+– شيكات لم تُصرف بعد (Outstanding Checks)
+= الرصيد المعدَّل حسب البنك
+
+يجب أن يتساوى الرصيدان المعدَّلان</code></pre>
+<hr />
+
+  </div>
+</section>
+
+<section class="ledger-sheet" id="الجزء-التاسع-مصطلحات-محاسبية-سريعة-glossary" data-chapter="9">
+  <header class="sheet-head">
+    <span class="folio-num">09</span>
+    <h1>الجزء التاسع: مصطلحات محاسبية سريعة (Glossary)</h1>
+  </header>
+  <div class="sheet-body">
+
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>المصطلح بالإنجليزية</th>
+<th>المقابل العربي</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Accrual</td>
+<td>استحقاق</td>
+</tr>
+<tr class="even">
+<td>Amortization</td>
+<td>استهلاك (أصول غير ملموسة)</td>
+</tr>
+<tr class="odd">
+<td>Assets</td>
+<td>أصول</td>
+</tr>
+<tr class="even">
+<td>Bad Debt Expense</td>
+<td>مصروف ديون معدومة</td>
+</tr>
+<tr class="odd">
+<td>Balance Sheet / Statement of Financial Position</td>
+<td>الميزانية العمومية / قائمة المركز المالي</td>
+</tr>
+<tr class="even">
+<td>Break-even Point</td>
+<td>نقطة التعادل</td>
+</tr>
+<tr class="odd">
+<td>Capital Expenditure (CapEx)</td>
+<td>مصروف رأسمالي</td>
+</tr>
+<tr class="even">
+<td>Contribution Margin</td>
+<td>هامش المساهمة</td>
+</tr>
+<tr class="odd">
+<td>Cost of Goods Sold (COGS)</td>
+<td>تكلفة البضاعة المباعة</td>
+</tr>
+<tr class="even">
+<td>Deferred Tax</td>
+<td>ضريبة مؤجلة</td>
+</tr>
+<tr class="odd">
+<td>Depreciation</td>
+<td>إهلاك (أصول ثابتة)</td>
+</tr>
+<tr class="even">
+<td>Direct Cost</td>
+<td>تكلفة مباشرة</td>
+</tr>
+<tr class="odd">
+<td>Equity</td>
+<td>حقوق الملكية</td>
+</tr>
+<tr class="even">
+<td>Fixed Cost</td>
+<td>تكلفة ثابتة</td>
+</tr>
+<tr class="odd">
+<td>Goodwill</td>
+<td>شهرة</td>
+</tr>
+<tr class="even">
+<td>Gross Profit</td>
+<td>مجمل الربح</td>
+</tr>
+<tr class="odd">
+<td>Impairment</td>
+<td>اضمحلال القيمة</td>
+</tr>
+<tr class="even">
+<td>Indirect Cost / Overhead</td>
+<td>تكلفة غير مباشرة</td>
+</tr>
+<tr class="odd">
+<td>Inventory</td>
+<td>مخزون</td>
+</tr>
+<tr class="even">
+<td>Liabilities</td>
+<td>خصوم/التزامات</td>
+</tr>
+<tr class="odd">
+<td>Net Income</td>
+<td>صافي الربح</td>
+</tr>
+<tr class="even">
+<td>Operating Expenses</td>
+<td>مصروفات تشغيلية</td>
+</tr>
+<tr class="odd">
+<td>Prepaid Expenses</td>
+<td>مصروفات مدفوعة مقدماً</td>
+</tr>
+<tr class="even">
+<td>Provision</td>
+<td>مخصص</td>
+</tr>
+<tr class="odd">
+<td>Retained Earnings</td>
+<td>أرباح محتجزة</td>
+</tr>
+<tr class="even">
+<td>Revenue Recognition</td>
+<td>الاعتراف بالإيراد</td>
+</tr>
+<tr class="odd">
+<td>Trial Balance</td>
+<td>ميزان المراجعة</td>
+</tr>
+<tr class="even">
+<td>Unearned Revenue</td>
+<td>إيرادات مقبوضة مقدماً (غير مكتسبة)</td>
+</tr>
+<tr class="odd">
+<td>Variable Cost</td>
+<td>تكلفة متغيرة</td>
+</tr>
+<tr class="even">
+<td>Working Capital</td>
+<td>رأس المال العامل</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="ملاحظة-ختامية">ملاحظة ختامية</h2>
+<p>هذا المرجع يغطي الأساسيات الجوهرية بعمق كافٍ للإجابة بثقة في معظم أسئلة المقابلات المحاسبية. لأي موضوع تريد تعميقه أكثر (مثال: أمثلة عددية محلولة خطوة بخطوة، حالات عملية Case Studies، أسئلة اختيار من متعدد بأسلوب CMA، أو تفصيل معيار محاسبي معين)، اطلب ذلك تحديداً وسأوسّع القسم المطلوب.</p>
+
+  </div>
+</section>
+
+    <footer class="colophon">
+      <div class="ruled-line wide"></div>
+      <p>أُعِدّ هذا المرجع بترتيب تسعة أجزاء متتابعة — كل جزء ورقة مستقلة في الدفتر، وكل عنوان بندٌ في السجل.</p>
+    </footer>
+  </div>
+</main>
+
+<script>
+// active link highlighting on scroll
+const sections = document.querySelectorAll('.ledger-sheet');
+const links = document.querySelectorAll('.nav-link');
+const progressFill = document.getElementById('progressFill');
+const pagesEl = document.getElementById('pages');
+
+function onScroll() {
+  let currentId = sections[0] && sections[0].id;
+  const scrollPos = pagesEl.scrollTop + 140;
+  sections.forEach(sec => {
+    if (sec.offsetTop <= scrollPos) currentId = sec.id;
+  });
+  links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + currentId));
+
+  const scrollable = pagesEl.scrollHeight - pagesEl.clientHeight;
+  const pct = scrollable > 0 ? (pagesEl.scrollTop / scrollable) * 100 : 0;
+  progressFill.style.width = pct + '%';
+}
+pagesEl.addEventListener('scroll', onScroll, {passive:true});
+onScroll();
+
+links.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const id = link.getAttribute('href').slice(1);
+    const target = document.getElementById(id);
+    if (target) {
+      pagesEl.scrollTo({top: target.offsetTop - 24, behavior:'smooth'});
+    }
+    document.getElementById('sidebar').classList.remove('open');
+  });
+});
+
+document.getElementById('mobileToggle').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+});
+</script>
+</body>
+</html>
